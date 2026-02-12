@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Weather</title>
+    <link rel="stylesheet" href="../css/styles.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../js/extra-views.js" defer></script>
+</head>
+<body>
+    <header class="navbar">
+        <a class="nav-item" href="../../index.html">Custom</a>
+        <a class="nav-item" href="humidity.html">Humidity</a>
+        <a class="nav-item active" href="precipitation.html">Precipitation</a>
+    </header>
+    
+    <main>
+        <div class="selection-menu">
+            <div class="selector">
+                <label for="time-select">Select Time Span:</label>
+                <select id="time-select">
+                    <option value="20">
+                        Past 20h
+                    </option>
+                    <option value="1">
+                        Past Day
+                    </option>
+                    <option value="2">
+                        Past 2 Days
+                    </option>
+                    <option value="3">
+                        Past 3 Days
+                    </option>
+                    <option value="7">
+                        Past Week
+                    </option>
+                    <option value="30">
+                        Past Month
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="main-content"> <!-- Used to stop padding from causing a scroll-wheel to appear -->
+            <div class="info-display">
+                <div id="stats1" class="stats">
+                    <p id="mean">Mean:</p>
+                    <p id="range">Range:</p>
+                    <p id="median">Median:</p>
+                </div>
+                <div class="chartContainer">
+                    <canvas id="chart" style="max-height: 100%; max-width: 100%;"></canvas>
+                </div>
+                <div id="stats1" class="stats">
+                    <p id="amplitude">Amplitude:</p>
+                    <p id="modes">Modes:</p>
+                    <p id="std-dev">Std Dev:</p>
+                </div>
+            </div>
+        </div class="main-content">
+    </main>
+</body>
+</html>

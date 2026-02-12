@@ -1,0 +1,238 @@
+let chartObj; // the chart is stored here, declared outside of functions because updatePage() needs to be able to destroy it and makeChart() needs to be able to make it
+
+async function fetchData(timeSpan, dataType) { // tries to retrieve data from open-meteo
+    try {
+        const params = new URLSearchParams ({
+            latitude: 61.4991,
+            longitude: 23.7871,
+            hourly: dataType,
+            timezone: "auto",
+            past_days: (timeSpan == 20) ? 1 : timeSpan, // for convenience with the values, 20 is still used but only asks for the past day (since it is the last 20 hours), all other arguments ask for days so they just use their own value
+            forecast_days: 1,
+        });
+        
+        const url = `https://api.open-meteo.com/v1/forecast?${params.toString()}`;
+        const responses = await fetch(url);
+        const data = await responses.json();
+
+        return (data.hourly); // we only need the hourly data
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+async function getWeather(timeSpan, dataType) {
+    const date = new Date();
+    const now = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().slice(0, 14) + "00";
+
+    let entries = (timeSpan == 20) ? 20 : timeSpan*24; // how many hours to show before the current time (inclusive)
+    const data = await fetchData(timeSpan, dataType);
+
+    const lastIndex = data.time.indexOf(now)+1; // the index after the current time, used in the slice
+    const weather = { // makes an object that contains the amount of entries the user specifies up until the current time
+        time: data.time.slice(lastIndex-entries, lastIndex),
+        [dataType]: data[dataType].slice(lastIndex-entries, lastIndex)
+    };
+    weather.time = weather.time.map(time => time.slice(0, 10) + " " + time.slice(11)); // cleans up the strings so that there is no "T" in the middle
+    return weather;
+}
+
+async function makeChart(labelValues, dataValues, dataType, unit) { // makes the chart object with chart.js
+    const ctx = document.getElementById('chart');
+    const dividor = (dataValues.length == 20) ? 4 : (dataValues.length/(24))*(2); // used to have only a small amount of ticks be visible, to keep the chart readable
+    const chartType = (dataType == "precipitation") ? "bar" : "line"; // uses a bar graph if displaying precipitation
+
+
+    chartObj = new Chart(ctx, {
+        type: chartType,
+        data: {
+            labels: labelValues,
+            datasets: [{
+                label: dataType,
+                data: dataValues,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            interaction: {
+                mode: 'index',      // triggers tooltip based on where cursor is horizontally (based on the index)
+                intersect: false    // shows tooltip without directy hovering overp point
+            },
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: "Date and Time (Hourly)",
+                        align: "bottom"
+                    },
+                    ticks: {
+                        autoSkip: false,
+                        callback: function(index) {
+                            return index % dividor == 0 ? this.getLabelForValue(index) : ''; // Make it so that there are only 4 labels
+                        }
+                    }, 
+                    grid: {
+                        color: function(context) {
+                            // Only show grid line for every tick with a label
+                            return context.index % dividor == 0
+                                ? "rgba(0,0,0,0.1)"
+                                : "transparent";
+                        }
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: `${dataType}, ${unit}`,
+                    },
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                display: false
+                }
+            }
+        }
+    });
+}
+
+function updateStats(weather, dataType, unit) { // updates the statistics bars' info
+    const values = weather[dataType];
+    const mean = getMean(values);
+    const max = Math.max(...values);
+    const min = Math.min(...values);
+    const median = getMedian(values);
+    const stdDev = getStandardDeviation(values, mean);
+
+    document.getElementById("mean").textContent = `Mean:\n${round(mean, 1)}${unit}`;
+    document.getElementById("range").textContent = `Range:\n${min}${unit} to ${max}${unit}`;
+    document.getElementById("median").textContent = `Median:\n${round(median, 1)}${unit}`;
+
+    document.getElementById("amplitude").textContent = `Amplitude:\n${round((max - min), 1)}${unit}`;
+    document.getElementById("modes").textContent = `Modes:\n${getModes(values, unit)}`;
+    document.getElementById("std-dev").textContent = `Std Dev:\n${round(stdDev, 1)}${unit}`;
+}
+
+function round(value, precision) { // rounds a number, the 2nd argument specifies how many values past the decimal point to keep
+    let multiplier = Math.pow(10, precision || 0);
+    return Math.round(((value * multiplier) - 1e-4)) / multiplier; // adds a magic number (1e-4) otherwise due to floating point precision a value like 0.5 gets rounded to 0 instead of 1
+}
+
+function getMean(arr) { // returns the mean of the values from an array
+    return (arr.reduce((a, b) => a + b) / arr.length);
+}
+
+function getMedian(arr) { // returns the median of the values from an array
+    let sorted = [...arr].sort((a, b) => a - b); // uses an arrow function to return integers instead of the default strings
+    let length = sorted.length;
+
+    if (length % 2 == 1) {
+        return sorted[(length / 2) - 0.5];
+    } else {
+        return (sorted[length / 2] + sorted[(length / 2) - 1]) / 2;
+    }
+}
+
+function getModes(arr, unit) { // returns the modes of the values from an array
+    const frequencyMap = {};
+
+    arr.forEach(number => {
+        frequencyMap[number] =
+            (frequencyMap[number] || 0) + 1;
+    });
+
+    let modes = "";
+    let maxFrequency = 0;
+    let counter = 0;
+
+    for (const number in frequencyMap) {
+        const frequency = frequencyMap[number];
+        if (frequency >= maxFrequency) {
+            if (frequency > maxFrequency) {
+                maxFrequency = frequency;
+                modes = `${number}${unit}`;
+                counter = 0;
+            } else if (frequency == maxFrequency) {
+                modes += `, `;
+                if (counter == 2) { // makes it so that the values are not all in one line
+                    modes += "\n";
+                    counter = 0;
+                }
+                modes += `${number}${unit}`;
+            }
+            
+            counter++;
+        }
+
+    }
+    return modes;
+}
+
+function getStandardDeviation(arr, mean) { // returns the standard deviation of the values from an array
+    return Math.sqrt(arr.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / arr.length)
+}
+
+function getUnit (dataType) { // returns the appropriate unit for a selection of data types
+    switch(dataType) {
+        case "relative_humidity_2m":
+            return "%";
+        case "temperature_2m":
+        case "dew_point_2m":
+        case "apparent_temperature":
+            return "°C";
+        case "precipitation":
+            return " ml";
+        case "surface_pressure":
+            return " hPa";
+        case "wind_speed_10m":
+            return " km/h";
+    }
+}
+
+async function updatePage(timeSpan, dataType) { // tries to obtain data from open-meteo, update the stats and make the chart
+    try {
+        const data = await fetchData(timeSpan, dataType);
+        const unit = getUnit(dataType);
+        updateStats(data, dataType, unit);
+        makeChart(data.time, data[dataType], dataType, unit);
+    }
+    catch (e) {
+        console.error("Error updating weather info:", e);
+    }
+}
+
+function daysFromNow(days) { // return the inputted amount of days added to the current date
+    let date = new Date();
+    date.setDate(date.getDate() + days);
+    return date.toISOString().split("T")[0];
+}
+
+async function main() {
+    let timeSpan = 20;
+    let dataType;
+    switch (window.location.pathname) { // different default data type depending on page
+        case "/humidity.html":
+            dataType = "relative_humidity_2m";
+            break;
+        case "/precipitation.html":
+            dataType = "precipitation";
+            break;
+        default:
+            dataType = "temperature_2m";
+    }
+    
+    const timeSelect = document.getElementById("time-select"); // element for inputting the time span on view 2 and 3
+
+    timeSelect.addEventListener("change", (event) => {
+        timeSpan = event.target.value;
+        chartObj.destroy();
+        updatePage(timeSpan, dataType);
+        console.log(timeSpan);
+    });
+
+    updatePage(timeSpan, dataType);
+}
+
+main();

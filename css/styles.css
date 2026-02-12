@@ -1,0 +1,171 @@
+/* used for <html> */
+:root { 
+    --black: #000000;
+    --black-transluscent: #00000036;
+    --white: #ffffff;
+    --white-transluscent: #ffffff36;
+    --gray: #E5E5E5FF;
+    --dark-gray: #CCCCCCFF;
+    --blue: #66d9f0;
+    --blue-transluscent: #66d9f079;
+    --indigo: #2F2963;
+    --twilight: #454372;
+    --stats: #643456;
+}
+
+/* Global */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    height: 100vh;
+    margin: 0;
+    padding: 1rem;
+
+    font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-around;
+    gap: 1rem;
+}
+
+.nav-item {
+    display: block;
+    flex: 1;
+
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+
+    border-radius: 1rem;
+    background-color: var(--indigo);
+
+    text-decoration: none;
+    color: var(--white);
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: bolder;
+}
+
+.active {
+    background-color: var(--twilight);
+}
+
+.main-content {
+    height: 90%;
+    padding-top: 1rem;
+}
+
+.selection-menu {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 0.5rem;
+
+    gap: 5%;
+
+    height: 10%;
+}
+
+.selector {
+    display: flex;
+    flex: 0 1 25rem;
+    flex-direction: column;
+    justify-content: center;
+
+    height: 100%;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+}
+
+input {
+    border: solid var(--black);
+    border-width: 0.1rem;
+    border-radius: 1rem;
+    padding: 0.5rem 0.75rem;
+    font: inherit;
+    transition: 0.25s;
+}
+
+input:hover {
+    background-color: var(--gray);
+    transition: 0.25s;
+}
+
+input:active {
+    background-color: var(--dark-gray);
+}
+
+
+input:focus {
+    outline: none;
+}
+
+/* change from button to select itelf to style the button */
+select {
+    appearance: base-select;
+    border-width: 0.1rem;
+    border-radius: 1rem;
+    padding: 0.5rem 0.75rem;
+    transition-duration: 0.25s;
+    align-items: center;
+}
+
+::picker(select) {
+    appearance: base-select;
+
+    border-width: 0.1rem;
+    padding: 0.5rem 0;
+    border-radius: 1rem;
+    transition: width 0.5s;
+    box-shadow: 0px 0px 1rem var(--black-transluscent);
+}
+
+/* hide checkmark */
+option::checkmark {
+    display: none;
+}
+
+
+
+.info-display {
+    display: grid;
+
+    grid-template-columns: 1fr minmax(0, 6fr) 1fr;
+    height: 100%;
+    min-height: 0; 
+}
+
+.chartContainer {
+    height: calc(100% - 2em);
+    padding-left: 1rem;
+    padding-right: 1rem;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+}
+
+.stats {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    text-align: center;
+
+    width: 100%;
+    padding: 1rem;
+
+    background-color: var(--stats);
+    border-radius: 1rem;
+
+    color: var(--white);
+    font-size: 2rem;
+    white-space: pre;
+}

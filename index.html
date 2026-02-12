@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Weather</title>
+    <link rel="stylesheet" href="css/styles.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/script.js" defer></script>
+</head>
+<body>
+    <header class="navbar">
+        <a class="nav-item active" href="index.html">Custom</a>
+        <a class="nav-item" href="/html/humidity.html">Humidity</a>
+        <a class="nav-item" href="/html/precipitation.html">Precipitation</a>
+    </header>
+    
+    <main>
+        <div class="selection-menu">
+            <div class="selector">
+                <label for="start-select">Select Start Date:</label>
+                <input type="date" id="start-select">
+            </div>
+            <div class="selector">
+                <label for="end-select">Select End Date:</label>
+                <input type="date" id="end-select">
+            </div>
+            <div class="selector">
+                <label for="data-select">Select Data Type:</label>
+                <select id="data-select">
+                    <option value="temperature_2m">
+                        Temperature
+                    </option>
+                    <option value="relative_humidity_2m">
+                        Relative Humidity
+                    </option>
+                    <option value="dew_point_2m">
+                        Dewpoint
+                    </option>
+                    <option value="apparent_temperature">
+                        "Feels Like" Temperature
+                    </option>
+                    <option value="surface_pressure">
+                        Surface Pressure
+                    </option>
+                    <option value="wind_speed_10m">
+                        Wind Speed
+                    </option>
+                    <option value="precipitation">
+                        Precipitation
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="main-content"> <!-- Used to stop padding from causing a scroll-wheel to appear -->
+            <div class="info-display">
+                <div id="stats2" class="stats">
+                    <p id="mean">Mean:</p>
+                    <p id="range">Range:</p>
+                    <p id="median">Median:</p>
+                </div>
+                <div class="chartContainer">
+                    <canvas id="chart" style="max-height: 100%; max-width: 100%;"></canvas>
+                </div>
+                <div id="stats1" class="stats">
+                    <p id="amplitude">Amplitude:</p>
+                    <p id="modes">Modes:</p>
+                    <p id="std-dev">Std Dev:</p>
+                </div>
+            </div>
+        </div class="main-content">
+    </main>
+</body>
+</html>
