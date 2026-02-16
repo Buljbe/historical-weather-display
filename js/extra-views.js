@@ -15,6 +15,7 @@ async function fetchData(timeSpan, dataType) { // tries to retrieve data from op
         const responses = await fetch(url);
         const data = await responses.json();
 
+        data.hourly.time = data.hourly.time.map(time => time.slice(0, 10) + " " + time.slice(11)); // cleans up the strings so that there is no "T" in the middle
         return (data.hourly); // we only need the hourly data
     } catch (error) {
         console.error(error);
@@ -155,17 +156,16 @@ function getModes(arr, unit) { // returns the modes of the values from an array
                 modes = `${number}${unit}`;
                 counter = 0;
             } else if (frequency == maxFrequency) {
-                modes += `, `;
-                if (counter == 2) { // makes it so that the values are not all in one line
-                    modes += "\n";
-                    counter = 0;
+                if (counter != 4) { // if there are too many modes the rest are not displayed.
+                    modes += `, ${number}${unit}`;
                 }
-                modes += `${number}${unit}`;
+                else {
+                    modes += ", ...";
+                    break
+                }
             }
-            
             counter++;
         }
-
     }
     return modes;
 }
@@ -212,11 +212,12 @@ function daysFromNow(days) { // return the inputted amount of days added to the 
 async function main() {
     let timeSpan = 20;
     let dataType;
+    console.log(window.location.pathname);
     switch (window.location.pathname) { // different default data type depending on page
-        case "/humidity.html":
+        case "/html/humidity.html":
             dataType = "relative_humidity_2m";
             break;
-        case "/precipitation.html":
+        case "/html/precipitation.html":
             dataType = "precipitation";
             break;
         default:

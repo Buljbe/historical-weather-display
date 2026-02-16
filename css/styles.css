@@ -16,6 +16,7 @@
 /* Global */
 * {
     box-sizing: border-box;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
 body {
@@ -24,8 +25,6 @@ body {
     height: 100vh;
     margin: 0;
     padding: 1rem;
-
-    font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
 .navbar {
@@ -68,7 +67,8 @@ body {
 
     gap: 5%;
 
-    height: 10%;
+    min-height: 10%;
+    /*height: 10%;*/
 }
 
 .selector {
@@ -144,21 +144,24 @@ option::checkmark {
 }
 
 .chartContainer {
+    display: flex;
     height: calc(100% - 2em);
-    padding-left: 1rem;
-    padding-right: 1rem;
     min-width: 0;
     min-height: 0;
-    display: flex;
+
+    /* not using gap on .info-display due to needing to get rid of the gap between .stats on smaller screens */
+    padding: 0 1rem 0 1rem;
 }
 
 .stats {
     display: flex;
+    flex: 1;
     flex-direction: column;
     align-items: center;
-    justify-content: space-around;
+    justify-content: center;
     text-align: center;
 
+    min-width: 0;
     width: 100%;
     padding: 1rem;
 
@@ -166,6 +169,46 @@ option::checkmark {
     border-radius: 1rem;
 
     color: var(--white);
-    font-size: 2rem;
-    white-space: pre;
+    font-size: clamp(1rem, 1.8vw, 2rem);
+    font-weight: bold;
+    white-space: pre-line;
+}
+
+.stat {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    flex: 1;
+}
+
+@media screen and (max-width: 800px) {
+    .info-display {
+        display: flex;
+        flex-direction: column;
+
+        height: 100%;
+        min-height: 0; 
+    }
+
+    .chartContainer {
+        padding: 0 0 1rem 0;
+    }
+
+    .stats {
+        flex-direction: row;
+        order: 2;
+
+        font-size: clamp(1rem, 3vw, 2rem);
+    }
+
+    #stats1 {
+        border-radius: 1rem 1rem 0 0;
+    }
+
+    #stats2 {
+        border-radius: 0 0 1rem 1rem;
+    }
+
+    
 }

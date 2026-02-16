@@ -140,17 +140,16 @@ function getModes(arr, unit) { // returns the modes of the values from an array
                 modes = `${number}${unit}`;
                 counter = 0;
             } else if (frequency == maxFrequency) {
-                modes += `, `;
-                if (counter == 2) { // makes it so that the values are not all in one line
-                    modes += "\n";
-                    counter = 0;
+                if (counter != 4) { // if there are too many modes the rest are not displayed.
+                    modes += `, ${number}${unit}`;
                 }
-                modes += `${number}${unit}`;
+                else {
+                    modes += ", ...";
+                    break
+                }
             }
-            
             counter++;
         }
-
     }
     return modes;
 }
