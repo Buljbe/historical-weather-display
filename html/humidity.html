@@ -6,59 +6,74 @@
     <title>Weather</title>
     <link rel="stylesheet" href="../css/styles.css"/>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="../js/extra-views.js" defer></script>
+    <script type="module" src="../js/extra-views.js" defer></script>
 </head>
 <body>
-    <header class="navbar">
-        <a class="nav-item" href="../../index.html">Custom</a>
-        <a class="nav-item active" href="humidity.html">Humidity</a>
-        <a class="nav-item" href="precipitation.html">Precipitation</a>
-    </header>
-    
     <main>
-        <div class="selection-menu">
-            <div class="selector">
-                <label for="time-select">Select Time Span:</label>
-                <select id="time-select">
-                    <option value="20">
-                        Past 20h
-                    </option>
-                    <option value="1">
-                        Past Day
-                    </option>
-                    <option value="2">
-                        Past 2 Days
-                    </option>
-                    <option value="3">
-                        Past 3 Days
-                    </option>
-                    <option value="7">
-                        Past Week
-                    </option>
-                    <option value="30">
-                        Past Month
-                    </option>
-                </select>
-            </div>
-        </div>
-        <div class="main-content"> <!-- Used to stop padding from causing a scroll-wheel to appear -->
-
-            <div class="info-display">
-                <div id="stats1" class="stats">
-                    <p id="mean">Mean:</p>
-                    <p id="range">Range:</p>
-                    <p id="median">Median:</p>
+        <header class="navbar">
+            <a class="nav-item" href="../index.html">Custom</a>
+            <a class="nav-item active" href="/html/humidity.html">Humidity</a>
+            <a class="nav-item" href="/html/precipitation.html">Precipitation</a>
+        </header>
+        <section class="main-content">
+            <section class="selection-menu">
+                <div class="selector">
+                    <label for="time-select">Select Time Span:</label>
+                    <select id="time-select">
+                        <option value="20">
+                            Past 20h
+                        </option>
+                        <option value="1">
+                            Past Day
+                        </option>
+                        <option value="2">
+                            Past 2 Days
+                        </option>
+                        <option value="3">
+                            Past 3 Days
+                        </option>
+                        <option value="7">
+                            Past Week
+                        </option>
+                        <option value="30">
+                            Past Month
+                        </option>
+                    </select>
                 </div>
-                <div class="chartContainer">
-                    <canvas id="chart" style="max-height: 100%; max-width: 100%;"></canvas>
+            </section>
+            <section class="main-info"> <!-- Used to stop padding from causing a scroll-wheel to appear -->
+                <div class="info-display">
+                    <div id="stats1" class="stats">
+                        <p id="mean" class="stat">Mean:</p>
+                        <p id="range" class="stat">Range:</p>
+                        <p id="median" class="stat">Median:</p>
+                    </div>
+                    <div class="chartContainer">
+                        <canvas id="chart" style="max-height: 100%; max-width: 100%;"></canvas>
+                    </div>
+                    <div id="stats2" class="stats">
+                        <p id="amplitude" class="stat">Amplitude:</p>
+                        <p id="modes" class="stat">Modes:</p>
+                        <p id="std-dev" class="stat">Std Dev:</p>
+                    </div>
                 </div>
-                <div id="stats1" class="stats">
-                    <p id="amplitude">Amplitude:</p>
-                    <p id="modes">Modes:</p>
-                    <p id="std-dev">Std Dev:</p>
-                </div>
-            </div>
-        </div class="main-content">
+            </section>
+        </section>
     </main>
+    <section class="table-section">
+        <div class="table-wrapper">
+            <table id="weather-table">
+                <thead>
+                    <tr>
+                        <th id="date">Date</th>
+                        <th id="time">Time</th>
+                        <th id="value">Value</th>
+                    </tr>
+                </thead>
+                <tbody> <!-- Will contain the added rows with JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </section>
 </body>
 </html>

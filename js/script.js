@@ -1,30 +1,8 @@
-let chartObj; // the chart is stored here, declared outside of functions because updatePage() needs to be able to destroy it and makeChart() needs to be able to make it
+export let chartObj; // the chart is stored here, declared outside of functions because updatePage() needs to be able to destroy it and makeChart() needs to be able to make it
 
-async function fetchData(startDate, endDate, dataType) { // tries to retrieve data from open-meteo
-    try {
-        const params = new URLSearchParams ({
-            latitude: 61.4991,
-            longitude: 23.7871,
-            hourly: dataType,
-            timezone: "auto",
-            start_date: startDate,
-            end_date: endDate
-        });
-        
-        const url = `https://api.open-meteo.com/v1/forecast?${params.toString()}`;
-        const responses = await fetch(url);
-        const data = await responses.json();
-
-        data.hourly.time = data.hourly.time.map(time => time.slice(0, 10) + " " + time.slice(11)); // cleans up the strings so that there is no "T" in the middle
-        return (data.hourly); // we only need the hourly data
-    } catch (error) {
-        console.error(error);
-    }
-}
-
-async function makeChart(labelValues, dataValues, dataType, unit) { // makes the chart object with chart.js
+export async function makeChart(labelValues, dataValues, dataType, unit) { // makes the chart object with chart.js
     const ctx = document.getElementById('chart');
-    const dividor = (dataValues.length/(24))*(2); // used to have only a small amount of ticks be visible, to keep the chart readable
+    const dividor = (dataValues.length == 20) ? 4 : (dataValues.length/(24))*(2); // used to have only a small amount of ticks be visible, to keep the chart readable
     const chartType = (dataType == "precipitation") ? "bar" : "line"; // uses a bar graph if displaying precipitation
 
 
@@ -54,7 +32,7 @@ async function makeChart(labelValues, dataValues, dataType, unit) { // makes the
                     ticks: {
                         autoSkip: false,
                         callback: function(index) {
-                            return index % dividor == 0 ? this.getLabelForValue(index) : ''; // Make it so that there are only 4 labels
+                            return index % dividor == 0 ? this.getLabelForValue(index) : ''; // Make it so that the chart is not flooded with labels
                         }
                     }, 
                     grid: {
@@ -83,7 +61,7 @@ async function makeChart(labelValues, dataValues, dataType, unit) { // makes the
     });
 }
 
-function updateStats(weather, dataType, unit) { // updates the statistics bars' info
+export function updateStats(weather, dataType, unit) { // updates the statistics bars' info
     const values = weather[dataType];
     const mean = getMean(values);
     const max = Math.max(...values);
@@ -158,7 +136,7 @@ function getStandardDeviation(arr, mean) { // returns the standard deviation of 
     return Math.sqrt(arr.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / arr.length)
 }
 
-function getUnit (dataType) { // returns the appropriate unit for a selection of data types
+export function getUnit(dataType) { // returns the appropriate unit for a selection of data types
     switch(dataType) {
         case "relative_humidity_2m":
             return "%";
@@ -175,78 +153,21 @@ function getUnit (dataType) { // returns the appropriate unit for a selection of
     }
 }
 
-async function updatePage(startDate, endDate, dataType) { // tries to obtain data from open-meteo, update the stats and make the chart
-    try {
-        const data = await fetchData(startDate, endDate, dataType);
-        const unit = getUnit(dataType);
-        updateStats(data, dataType, unit);
-        makeChart(data.time, data[dataType], dataType, unit);
+export function makeTable(time, value, unit) { // fills the table with data rows
+    const table = document.getElementById("weather-table");
+    const tbody = table.querySelector("tbody");
+
+    // Clear previous rows
+    tbody.replaceChildren();
+
+    for (let i = 0; i < value.length; i++) {
+        let dateTime = time[i].split(" ");
+        let row = tbody.insertRow();
+        let dateCell = row.insertCell(0);
+        let timeCell = row.insertCell(1);
+        let valueCell = row.insertCell(2);
+        dateCell.innerHTML = dateTime[0];
+        timeCell.innerHTML = dateTime[1];
+        valueCell.innerHTML = `${value[i]}${unit}`;
     }
-    catch (e) {
-        console.error("Error updating weather info:", e);
-    }
 }
-
-function daysFromNow(days) { // return the inputted amount of days added to the current date
-    let date = new Date();
-    date.setDate(date.getDate() + days);
-    return date.toISOString().split("T")[0];
-}
-
-async function main() {
-    let startDate = daysFromNow(-7);
-    let endDate = daysFromNow(0);
-    let dataType = "temperature_2m";
-
-    const startDateSelect = document.getElementById("start-select"); // element for inputting the start date on view 1 (custom)
-    const endDateSelect = document.getElementById("end-select"); // element for inputting the end date on view 1 (custom)
-    const dataSelect = document.getElementById("data-select"); // element for inputting the data type on view (custom)  
-
-    startDateSelect.value = startDate;
-    endDateSelect.value = endDate;
-
-    let daysBefore = -60; // 2 months before now
-    let daysAfter = 15; // 2 weeks after now
-
-    // clicking the date input opens the calendar
-    startDateSelect.addEventListener("click", () => {
-        startDateSelect.showPicker();
-    });
-    endDateSelect.addEventListener("click", () => {
-        endDateSelect.showPicker();
-    });
-
-    startDateSelect.addEventListener("change", (event) => {
-        startDate = event.target.value;
-        endDateSelect.min = startDate; // you cannot select an end date that comes before the start date
-        chartObj.destroy();
-        updatePage(startDate, endDate, dataType);
-    });
-
-    endDateSelect.addEventListener("change", (event) => {
-        endDate = event.target.value;
-        startDateSelect.max = endDate; // you cannot select a start date that comes after the end date
-        chartObj.destroy();
-        updatePage(startDate, endDate, dataType);
-    });
-
-    let minDate = daysFromNow(daysBefore);
-    let maxDate = daysFromNow(daysAfter);
-
-    startDateSelect.min = minDate;
-    endDateSelect.min = startDate;
-    startDateSelect.max = endDate;
-    endDateSelect.max = maxDate;
-
-    dataSelect.addEventListener("change", (event) => {
-        dataType = event.target.value;
-        chartObj.destroy();
-        updatePage(startDate, endDate, dataType);
-    });
-
-    updatePage(startDate, endDate, dataType);
-
-
-}
-
-main();

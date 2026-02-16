@@ -6,69 +6,150 @@
     <title>Weather</title>
     <link rel="stylesheet" href="css/styles.css"/>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="js/script.js" defer></script>
+    <script type="module" src="js/custom-view.js" defer></script>
 </head>
-<body>
-    <header class="navbar">
-        <a class="nav-item active" href="index.html">Custom</a>
-        <a class="nav-item" href="/html/humidity.html">Humidity</a>
-        <a class="nav-item" href="/html/precipitation.html">Precipitation</a>
-    </header>
-    
+<body class="custom-view">
     <main>
-        <div class="selection-menu">
-            <div class="selector">
-                <label>Select Start Date:</label>
-                <input type="date" id="start-select">
-            </div>
-            <div class="selector">
-                <label>Select End Date:</label>
-                <input type="date" id="end-select">
-            </div>
-            <div class="selector">
-                <label>Select Data Type:</label>
-                <select id="data-select">
-                    <option value="temperature_2m">
-                        Temperature
-                    </option>
-                    <option value="relative_humidity_2m">
-                        Relative Humidity
-                    </option>
-                    <option value="dew_point_2m">
-                        Dewpoint
-                    </option>
-                    <option value="apparent_temperature">
-                        "Feels Like" Temperature
-                    </option>
-                    <option value="surface_pressure">
-                        Surface Pressure
-                    </option>
-                    <option value="wind_speed_10m">
-                        Wind Speed
-                    </option>
-                    <option value="precipitation">
-                        Precipitation
-                    </option>
-                </select>
-            </div>
-        </div>
-        <div class="main-content"> <!-- Used to stop padding from causing a scroll-wheel to appear -->
-            <div class="info-display">
-                <div id="stats1" class="stats">
-                    <p id="mean" class="stat">Mean:</p>
-                    <p id="range" class="stat">Range:</p>
-                    <p id="median" class="stat">Median:</p>
+        <header class="navbar">
+            <a class="nav-item active" href="index.html">Custom</a>
+            <a class="nav-item" href="/html/humidity.html">Humidity</a>
+            <a class="nav-item" href="/html/precipitation.html">Precipitation</a>
+        </header>
+        <section class="main-content">
+            <section class="selection-menu">
+                <div class="selector">
+                    <label>City:</label>
+                    <select id="city-select">
+                        <option>
+                            Helsinki
+                        </option>
+                        <option>
+                            Hämeenlinna
+                        </option>
+                        <option>
+                            Joensuu
+                        </option>
+                        <option>
+                            Jyväskylä
+                        </option>
+                        <option>
+                            Kajaani
+                        </option>
+                        <option>
+                            Kokkola
+                        </option>
+                        <option>
+                            Kouvola
+                        </option>
+                        <option>
+                            Kotka
+                        </option>
+                        <option>
+                            Kuopio
+                        </option>
+                        <option>
+                            Lahti
+                        </option>
+                        <option>
+                            Lappeenranta
+                        </option>
+                        <option>
+                            Mariehamn
+                        </option>
+                        <option>
+                            Mikkeli
+                        </option>
+                        <option>
+                            Oulu
+                        </option>
+                        <option>
+                            Pori
+                        </option>
+                        <option>
+                            Rovaniemi
+                        </option>
+                        <option>
+                            Seinäjoki
+                        </option>
+                        <option>
+                            Tampere
+                        </option>
+                        <option>
+                            Turku
+                        </option>
+                        <option>
+                            Vaasa
+                        </option>
+                    </select>
                 </div>
-                <div class="chartContainer">
-                    <canvas id="chart" style="max-height: 100%; max-width: 100%;"></canvas>
+                <div class="selector">
+                    <label>Data Type:</label>
+                    <select id="data-select">
+                        <option value="temperature_2m">
+                            Temperature
+                        </option>
+                        <option value="relative_humidity_2m">
+                            Relative Humidity
+                        </option>
+                        <option value="dew_point_2m">
+                            Dewpoint
+                        </option>
+                        <option value="apparent_temperature">
+                            "Feels Like" Temperature
+                        </option>
+                        <option value="surface_pressure">
+                            Surface Pressure
+                        </option>
+                        <option value="wind_speed_10m">
+                            Wind Speed
+                        </option>
+                        <option value="precipitation">
+                            Precipitation
+                        </option>
+                    </select>
                 </div>
-                <div id="stats2" class="stats">
-                    <p id="amplitude" class="stat">Amplitude:</p>
-                    <p id="modes" class="stat">Modes:</p>
-                    <p id="std-dev" class="stat">Std Dev:</p>
+                <div class="selector">
+                    <label>Start Date:</label>
+                    <input type="date" id="start-select">
                 </div>
-            </div>
-        </div class="main-content">
+                <div class="selector">
+                    <label>End Date:</label>
+                    <input type="date" id="end-select">
+                </div>
+            </section>
+            <section class="main-info"> <!-- Used to stop padding from causing a scroll-wheel to appear -->
+                <div class="info-display">
+                    <div id="stats1" class="stats">
+                        <p id="mean" class="stat">Mean:</p>
+                        <p id="range" class="stat">Range:</p>
+                        <p id="median" class="stat">Median:</p>
+                    </div>
+                    <div class="chartContainer">
+                        <canvas id="chart" style="max-height: 100%; max-width: 100%;"></canvas>
+                    </div>
+                    <div id="stats2" class="stats">
+                        <p id="amplitude" class="stat">Amplitude:</p>
+                        <p id="modes" class="stat">Modes:</p>
+                        <p id="std-dev" class="stat">Std Dev:</p>
+                    </div>
+                </div>
+            </section>
+        </section>
     </main>
+    <section class="table-section">
+        <div class="table-wrapper">
+            <table id="weather-table">
+                <thead>
+                    <tr>
+                        <th id="date">Date</th>
+                        <th id="time">Time</th>
+                        <th id="value">Value</th>
+                    </tr>
+                </thead>
+                <tbody> <!-- Will contain the added rows with JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </section>
 </body>
 </html>
