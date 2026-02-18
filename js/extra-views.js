@@ -53,17 +53,19 @@ async function updatePage(timeSpan, dataType) { // tries to obtain data from ope
 async function main() {
     let timeSpan = 20;
     let dataType;
+    const fileName = window.location.pathname.split('/').pop(); // gets location of file, takes the name of the last file - the html
 
-    switch (window.location.pathname) { // different default data type depending on page
-        case "/html/humidity.html":
+    switch (fileName) { // different default data type depending on page
+        case "humidity.html":
             dataType = "relative_humidity_2m";
             break;
-        case "/html/precipitation.html":
+        case "precipitation.html":
             dataType = "precipitation";
             break;
         default:
             dataType = "temperature_2m";
     }
+
     
     const timeSelect = document.getElementById("time-select"); // element for inputting the time span on view 2 and 3
 
